@@ -1,0 +1,27 @@
+
+sudo nano /etc/apache2/sites-enabled/test_site.com.conf
+
+WSGIScriptAlias / /home/ubuntu/test_site.com/testproject/testproject/wsgi.py
+WSGIPythonPath /home/ubuntu/test_site.com/testproject 
+<Directory /home/ubuntu/test_site.com/testproject/testproject>
+    <Files wsgi.py>
+        Order deny,allow
+        Require all granted
+    </Files>
+</Directory>
+
+Alias /media/ /home/ubuntu/test_site.com/testproject/media/ 
+Alias /static/ /home/ubuntu/test_site.com/testproject/static/
+
+<Directory /home/ubuntu/test_site.com/testproject/static>
+    Require all granted
+</Directory>
+
+<Directory /home/ubuntu/test_site.com/testproject/media>
+    Require all granted
+</Directory> 
+
+
+
+sudo vim /etc/apache2/envvars -> put the appropriate envvars here for the server to run (for RDKit)
+
