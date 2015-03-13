@@ -18,8 +18,7 @@ def screen(request):
     my_j = request.body
     my_json = ast.literal_eval(my_j)
     if "SMILES" in my_json:
-        smiles = my_json["SMILES"]
-        
+        smiles = my_json["SMILES"]       
         scr_mols = [{"RDMOL": Chem.MolFromSmiles(str(smiles)}]# for x in str(smiles).split(".")]
     else:
         return HttpResponse("You must state a SMILES")
@@ -43,8 +42,9 @@ def screen(request):
         screen_lib = my_json["SCREEN_LIB"]
     else:
         screen_lib = "default"
-     # Now run the process
-     # Get the library
+    # Now run the process
+    print "RUNNING PROC"
+    # Get the library
     libm = LibMethods(screen_lib)
     mols = libm.get_mols()
     # Get the fps
