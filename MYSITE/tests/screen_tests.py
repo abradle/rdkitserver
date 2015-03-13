@@ -9,10 +9,10 @@ in_mols = ast.literal_eval(open("mols.json").read())
 # Read in the json for the smis
 in_smis = ast.literal_eval(open("smis.json").read())
 # Now set the url - this changes each time you run
-url = 'http://127.0.0.1/rdkit_screen/screen/'
+url = 'http://127.0.0.1:8000/rdkit_screen/screen/'
 # Now set the values in the get request - this is a simple JSON
 ####### THIS IS WHAT YOU NEED TO SET
-values = {'SMILES' : 'CCCCCC.CCCCCCCCC',#The smiles of your query mol. "."
+values = {'SMILES' : 'CCCCCC', #The smiles of your query mol. "."
           'THRESHOLD' : '0.5', # The threshold to find similar molecules
           'FP_METHOD' : 'morgan', # The method to use
           'SIM_METHOD' : 'tanimoto', # The similarity method to use
@@ -26,7 +26,6 @@ req = urllib2.Request(url, data, {'Content-Type': 'application/json'})
 f = urllib2.urlopen(req)
 # Read the response
 response = f.read()
-print response
 # Now run the test
 try:
     if len(ast.literal_eval(response)["SCREEN 0"]["OUT_MOLS"]) == 4:
@@ -36,7 +35,7 @@ try:
 except:
     print "TEST FAILED"
 
-print "Running smis screen test"
+print "Running smiles screen test"
 # Now do the smis test
 # Now set the values in the get request - this is a simple JSON
 values = {'SMILES' : 'CCCCCC',#The smiles to screen againast
@@ -54,7 +53,6 @@ f = urllib2.urlopen(req)
 # Read the response
 response = f.read()
 # Print the response
-print "Running smiles screening test"
 try:
     if len(ast.literal_eval(response)["SCREEN 0"]["OUT_MOLS"]) == 4:
         print "TEST PASSED"

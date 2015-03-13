@@ -21,19 +21,15 @@ def cluster(request):
     Returns an SDFile with the the cluster number as a property"""
     # Read the mols
     # Take the smiles in the request object
-    print "INSID FUNCTION"
     my_j = request.body
-    print my_j
     my_json = ast.literal_eval(my_j)
     if "SCREEN_LIB" in my_json:
         screen_lib = my_json["SCREEN_LIB"]
     else:
         return HttpResponse("MUST SPECIFY COMPOUNDS TO CLUSTER")
      # Get the library
-    print "GETTING MOLS"
     libm = LibMethods(screen_lib)
     mols = libm.get_mols()
-    print "GOT MOLS"
     # Make the fingerprints
     if "FP_METHOD" in my_json:
         fp_method = my_json["FP_METHOD"]
@@ -51,20 +47,16 @@ def cluster(request):
     # Now run the process
     # Get the library
     # Get the fps
-    print "GOT ARGS"
     fpm = FPMethods(fp_method)
     screen_fps = fpm.get_fps(mols)
-    print "GOT FPS"
     # Get the distance matrix for my mol(s)
     simm = SimMethods(sim_method)
     dists = []
     nfps = len(screen_fps)
-    print nfps, "FPS"
     for i in range(1,nfps):
         sims = [x["values"]["similarity"] for x in simm.find_sim(screen_fps[i], screen_fps[:i], -1.0)]
         # The mol(1) is the smiles of the mol
         dists.extend([1-x for x in sims])
-    print "GOT SIMILARITIES"
     # now cluster the data:
     cs = Butina.ClusterData(dists,nfps,threshold,isDistData=True)
     # Out mols
