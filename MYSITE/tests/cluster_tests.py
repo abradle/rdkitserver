@@ -3,6 +3,7 @@ import urllib2
 import ast
 import json
 
+print "Running smiles cluster test"
 # Read in the json for the mols
 in_mols = ast.literal_eval(open("mols.json").read())
 # Read in the json for the smis
@@ -34,7 +35,7 @@ try:
         print "TEST FAILED"
 except:
     print "TEST FAILED"
-
+print "Running smiles cluster test"
 # Now do the smis test
 # Now set the values in the get request - this is a simple JSON
 values = {'THRESHOLD' : '0.5', # The threshold to find similar molecules
