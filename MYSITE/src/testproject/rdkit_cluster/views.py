@@ -21,6 +21,7 @@ def cluster(request):
     Returns an SDFile with the the cluster number as a property"""
     # Read the mols
     # Take the smiles in the request object
+    print "INSID FUNCTION"
     my_j = request.body
     print my_j
     my_json = ast.literal_eval(my_j)
