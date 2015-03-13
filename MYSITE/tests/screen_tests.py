@@ -8,7 +8,7 @@ in_mols = ast.literal_eval(open("mols.json").read())
 # Read in the json for the smis
 in_smis = ast.literal_eval(open("smis.json").read())
 # Now set the url - this changes each time you run
-url = 'http://52.1.36.127/rdkit_screen/screen/'
+url = 'http://127.0.0.1/rdkit_screen/screen/'
 # Now set the values in the get request - this is a simple JSON
 values = {'SMILES' : 'CCCCCC',#The smiles to screen againast
           'THRESHOLD' : '0.5', # The threshold to find similar molecules
