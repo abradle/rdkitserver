@@ -11,14 +11,14 @@ RUN mkdir /RDKit && cd /RDKit && git clone https://github.com/rdkit/rdkit.git
 ADD bashrc /root/.bashrc
 ADD make_rdkit.bash /make_rdkit.bash
 RUN /bin/bash make_rdkit.bash
-ADD MYSITE /MYSITE
 ADD run_gunicorn.bash /run_gunicorn.bash
-RUN mkdir /MYSITE/logs/
 ADD nginx.conf /etc/nginx/sites-available/Mysite
 RUN ln -s /etc/nginx/sites-available/Mysite /etc/nginx/sites-enabled/Mysite
 RUN rm /etc/nginx/sites-enabled/default
-RUN python /MYSITE/src/testproject/manage.py collectstatic --noinput
 ADD set_nginx.bash /set_nginx.bash
 ENV SERVER_NAME localhost
 ENV SERVER_PORT 9000
-CMD cd /MYSITE && bash /set_nginx.bash && service nginx restart && service postgresql restart && bash /run_gunicorn.bash
+ADD MYSITE /MYSITE
+RUN mkdir /MYSITE/logs/
+RUN python /MYSITE/src/testproject/manage.py collectstatic --noinput
+CMD cd /MYSITE && bash /set_nginx.bash && service nginx restart && bash /run_gunicorn.bash
