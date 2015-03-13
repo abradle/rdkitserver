@@ -19,7 +19,8 @@ def screen(request):
     my_json = ast.literal_eval(my_j)
     if "SMILES" in my_json:
         smiles = my_json["SMILES"]
-        scr_mols = [{"RDMOL": Chem.MolFromSmiles(str(x)} for x in str(smiles).split(".")]
+        
+        scr_mols = [{"RDMOL": Chem.MolFromSmiles(str(smiles)}]# for x in str(smiles).split(".")]
     else:
         return HttpResponse("You must state a SMILES")
 
