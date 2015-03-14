@@ -32,8 +32,9 @@ def parse_json_mols(mols):
 
 
 class LibMethods():
-    def __init__(self, lib_mols):
+    def __init__(self, lib_mols, lib_type="JSON"):
         self.lib_mols = lib_mols
+        self.lib_type = lib_type
     def get_mols(self):
         my_mols = parse_json_mols(self.lib_mols)
         return my_mols

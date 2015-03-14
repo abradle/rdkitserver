@@ -61,3 +61,31 @@ try:
 except:
     print "TEST FAILED"
 
+
+print "Running json screen test"
+url = 'http://127.0.0.1:8000/rdkit_screen/screen_mol_body/'
+# Now do the smis test
+# Now set the values in the get request - this is a simple JSON
+values = {"MOLS": "CCCCCCC",
+          'THRESHOLD' : '0.2', # The threshold to find similar molecules
+          'FP_METHOD' : 'morgan', # The method to use
+          'SIM_METHOD' : 'tanimoto', # The similarity method to use
+          'SCREEN_LIB': "http://demos.informaticsmatters.com/rest/files/json/31" 
+}
+# Set the json
+# Set the put
+data = urllib.urlencode(values)
+# Make the request object
+req = urllib2.Request(url, data)
+# Now make the url
+f = urllib2.urlopen(req)
+# Read the response
+response = f.read()
+# Print the response
+try:
+    if len(ast.literal_eval(response)["SCREEN 0"]["OUT_MOLS"]) == 4:
+        print "TEST PASSED"
+    else:
+        print "TEST FAILED"
+except:
+    print "TEST FAILED"
