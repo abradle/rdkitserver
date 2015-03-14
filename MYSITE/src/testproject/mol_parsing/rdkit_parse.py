@@ -5,10 +5,16 @@ from rdkit import Chem
 def parse_mol_simple(my_type, txt):
     """Function to parse individual mols given a type"""
     if my_type == "mol":
-        try:
-            mol = Chem.MolFromMolBlock(txt.strip())
-        except:
+        # Try this way
+        mol = Chem.MolFromMolBlock(txt.strip())
+        if mol is None:
             mol = Chem.MolFromMolBlock(txt)
+        if mol is None:
+            mol = Chem.MolFromMolBlock("\n".join(txt.split("\n")[1:]))
+        if mol is None:
+            mol = Chem.MolFromMolBlock(txt, strictParsing=False)
+        if mol is None:
+            mol = Chem.MolFromMolBlock(txt.strip(), strictParsing=False)
     elif my_type == "smiles":
         # Assumes that smiles is the first column
         mol = Chem.MolFromSmiles(txt.split()[0])

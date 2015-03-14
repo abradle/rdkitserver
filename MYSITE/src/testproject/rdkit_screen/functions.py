@@ -23,11 +23,22 @@ def parse_json_mols(mols):
     out_mols = []
     for i,m in enumerate(mols):
         rdmol = rdkit_parse.parse_mol_json(m)
-        if m is None:
+        if rdmol is None:
             print "NONE MOL"
             continue
         m["RDMOL"] = rdmol
         out_mols.append(m)
+    return out_mols
+
+
+
+def sdf_mols_to_json(mols):
+    """Function to parse SDF mols and return a JSON back"""
+    out_mols = []
+    
+    for i,m in enumerate(mols.split("$$$$")):
+        print m
+        out_mols.append({"source": m, "format": "mol", "values": {}})
     return out_mols
 
 
@@ -36,7 +47,14 @@ class LibMethods():
         self.lib_mols = lib_mols
         self.lib_type = lib_type
     def get_mols(self):
-        my_mols = parse_json_mols(self.lib_mols)
+        if self.lib_type == "JSON":
+            my_mols = parse_json_mols(self.lib_mols)
+        elif self.lib_type == "SDF":
+            my_json = sdf_mols_to_json(self.lib_mols)
+            my_mols = parse_json_mols(my_json)
+        else:
+            print "NOT RECOGNISED TYPE"
+            return None
         return my_mols
 
 
