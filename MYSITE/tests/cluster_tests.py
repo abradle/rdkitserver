@@ -2,7 +2,14 @@ import urllib
 import urllib2
 import ast
 import json
+import sys
+import os
 
+my_plat = sys.platform
+if my_plat == "darwin":
+    docker_ip = str(os.environ["DOCKER_IP"])
+else:
+    docker_ip = "127.0.0.1"
 
 # Read in the json for the mols
 in_mols = ast.literal_eval(open("mols.json").read())
@@ -10,7 +17,7 @@ in_mols = ast.literal_eval(open("mols.json").read())
 in_smis = ast.literal_eval(open("smis.json").read())
 print "Running smiles cluster test"
 # Now set the url - this changes each time you run
-url = 'http://127.0.0.1:8000/rdkit_cluster/cluster/'
+url = 'http://'+docker_ip+':8000/rdkit_cluster/cluster/'
 # Now set the values in the get request - this is a simple JSON
 values =  {'THRESHOLD' : '0.5', # The threshold to find similar molecules
           'FP_METHOD' : 'morgan', # The method to use
@@ -84,7 +91,7 @@ except:
     print "TEST FAILED"
 
 print "Running the mols cluster test using a URL of SDF"
-url = 'http://127.0.0.1:8000/rdkit_cluster/cluster_mol_body/'
+url = 'http://'+docker_ip+':8000/rdkit_cluster/cluster_mol_body/'
 # Now set the values in the get request - this is a simple JSON
 values = {'THRESHOLD' : '0.5', # The threshold to find similar molecules
           'FP_METHOD' : 'morgan', # The method to use

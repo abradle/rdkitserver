@@ -2,6 +2,15 @@ import urllib
 import urllib2
 import ast
 import json
+import sys
+import os
+
+my_plat = sys.platform
+if my_plat == "darwin":
+    docker_ip = str(os.environ["DOCKER_IP"])
+else:
+    docker_ip = "127.0.0.1"
+
 
 print "Running mols screen test"
 # Read in the json for the mols
@@ -9,7 +18,7 @@ in_mols = ast.literal_eval(open("mols.json").read())
 # Read in the json for the smis
 in_smis = ast.literal_eval(open("smis.json").read())
 # Now set the url - this changes each time you run
-url = 'http://127.0.0.1:8000/rdkit_screen/screen/'
+url = 'http://'+docker_ip+':8000/rdkit_screen/screen/'
 # Now set the values in the get request - this is a simple JSON
 ####### THIS IS WHAT YOU NEED TO SET
 values = {'SMILES' : 'CCCCCC', #The smiles of your query mol. "."
@@ -63,7 +72,7 @@ except:
 
 
 print "Running json screen test"
-url = 'http://127.0.0.1:8000/rdkit_screen/screen_mol_body/'
+url = 'http://'+docker_ip+':8000/rdkit_screen/screen_mol_body/'
 # Now do the smis test
 # Now set the values in the get request - this is a simple JSON
 values = {"MOLS": "CCCCCCC",

@@ -1,4 +1,4 @@
-sudo docker pull abradle/rdkit
+sudo docker pull abradle/rdkitserver
 OUTPUT="$(sudo docker run -d=true -p 8000:8000 -e "SERVER_NAME=localhost" -e "SERVER_PORT=8000" abradle/rdkitserver)"
 echo STARTED SERVER
 echo WAITING TO CONNECT
