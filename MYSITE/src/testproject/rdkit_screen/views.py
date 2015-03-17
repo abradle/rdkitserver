@@ -27,9 +27,9 @@ def process_input(scr_mols, fp_method, sim_method, screen_lib, threshold):
     for i, mol in enumerate(mol_fps):
         out_mols = simm.find_sim(mol, screen_fps, threshold)
         # The mol(1) is the smiles of the mol
-        out_d["SCREEN "+str(i)] = {"IN_MOL": Chem.MolToSmiles(mol["RDMOL"], isomericSmiles=True), "OUT_MOLS": remove_keys(out_mols)}
-    # Now return - preferably as json
-    return HttpResponse(json.dumps(out_d))
+        out_d = remove_keys(out_mols)
+        # Now return - preferably as json
+        return HttpResponse(json.dumps(out_d))
 
 @csrf_exempt
 def screen_mol_body(request):
@@ -105,4 +105,38 @@ def screen(request):
         screen_lib = my_json["SCREEN_LIB"]
     else:
         screen_lib = "default"
+    return process_input(scr_mols, fp_method, sim_method, screen_lib, threshold)
+
+
+@csrf_exempt
+def screen_simple(request):
+    """View to take a smiles and then screen against a known library of actives"""
+    print "INSIDE FUNCTION"
+    # Take the smiles in the request object
+    print request.GET
+    screen_lib = dict(request.POST).keys()[0]
+    screen_lib = ast.literal_eval(str(screen_lib))
+    # Get the library
+    libm = LibMethods(screen_lib)
+    mols = libm.get_mols()
+    # Make the fingerprints
+    if "fp_method" in request.GET:
+        fp_method = request.GET["fp_method"]
+    else:
+        fp_method = "morgan"
+    if "sim_method" in request.GET:
+        sim_method = request.GET["sim_method"]
+    else:
+        sim_method = "tanimoto"
+
+    if "threshold" in request.GET:
+        threshold = float(request.GET["threshold"])
+    else:
+        threshold = 0.7
+    if "smiles" in request.GET:
+        smiles = request.GET["smiles"]
+        scr_mols = [{"RDMOL": Chem.MolFromSmiles(str(x))} for x in str(smiles).split(".")]
+    else:
+        return HttpResponse("You must state a SMILES")
+
     return process_input(scr_mols, fp_method, sim_method, screen_lib, threshold)

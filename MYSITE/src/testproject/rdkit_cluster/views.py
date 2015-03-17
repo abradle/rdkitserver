@@ -107,3 +107,34 @@ def cluster(request):
     else:
         threshold = 0.7
     return process_input(fp_method, sim_method, mols, threshold)
+
+
+
+@csrf_exempt
+def cluster_simple(request):
+        # Read the mols
+    # Take the smiles in the request object
+    print request.POST
+    screen_lib = dict(request.POST).keys()[0]
+    print screen_lib
+    screen_lib = ast.literal_eval(str(screen_lib))
+    # Get the library
+    libm = LibMethods(screen_lib)
+    mols = libm.get_mols()
+    # Make the fingerprints
+    if "fp_method" in request.GET:
+        fp_method = request.GET["fp_method"]
+    else:
+        fp_method = "morgan"
+    if "sim_method" in request.GET:
+        sim_method = request.GET["sim_method"]
+    else:
+        sim_method = "tanimoto"
+
+    if "threshold" in request.GET:
+        threshold = float(request.GET["threshold"])
+    else:
+        threshold = 0.7
+    return process_input(fp_method, sim_method, mols, threshold)
+
+

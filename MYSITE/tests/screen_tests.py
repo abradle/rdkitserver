@@ -39,7 +39,7 @@ f = urllib2.urlopen(req)
 response = f.read()
 # Now run the test
 try:
-    if len(ast.literal_eval(response)["SCREEN 0"]["OUT_MOLS"]) == 4:
+    if len(ast.literal_eval(response)) == 4:
         print "TEST PASSED"
     else:
         print "TEST FAILED"
@@ -65,7 +65,7 @@ f = urllib2.urlopen(req)
 response = f.read()
 # Print the response
 try:
-    if len(ast.literal_eval(response)["SCREEN 0"]["OUT_MOLS"]) == 4:
+    if len(ast.literal_eval(response)) == 4:
         print "TEST PASSED"
     else:
         print "TEST FAILED"
@@ -94,7 +94,7 @@ f = urllib2.urlopen(req)
 response = f.read()
 # Print the response
 try:
-    if len(ast.literal_eval(response)["SCREEN 0"]["OUT_MOLS"]) == 4:
+    if len(ast.literal_eval(response)) == 4:
         print "TEST PASSED"
     else:
         print "TEST FAILED"
