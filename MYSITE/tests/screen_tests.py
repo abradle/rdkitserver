@@ -6,7 +6,9 @@ import sys
 import os
 
 my_plat = sys.platform
-if my_plat == "darwin":
+
+
+if "DOCKER_IP" in os.environ:
     docker_ip = str(os.environ["DOCKER_IP"])
 else:
     docker_ip = "127.0.0.1"

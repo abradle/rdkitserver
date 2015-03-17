@@ -14,4 +14,6 @@ echo 5
 sleep 1
 python cluster_tests.py
 python screen_tests.py
-sudo docker kill $OUTPUT
+# Now stop it and kill
+sudo docker stop $OUTPUT
+sudo docker rm $OUTPUT
