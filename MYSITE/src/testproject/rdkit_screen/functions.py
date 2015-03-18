@@ -30,6 +30,16 @@ def parse_json_mols(mols):
         out_mols.append(m)
     return out_mols
 
+def add_values_dict(my_mols):
+    """Function to add a values dict to the JSON if it doesn't exist"""
+    out_mols = []
+    for mol in my_mols:
+        if "values" in mol:
+            pass
+        else:
+            mol["values"] = {}
+        out_mols.append(mol)
+    return out_mols
 
 
 def sdf_mols_to_json(mols):
@@ -55,6 +65,7 @@ class LibMethods():
         else:
             print "NOT RECOGNISED TYPE"
             return None
+        my_mols = add_values_dict(my_mols)
         return my_mols
 
 
