@@ -22,7 +22,7 @@ cmp --silent out.test_two out.test_two_check && echo "TEST PASSED" || echo "TEST
 rm out.test_two
 echo "RUNNING TEST THREE -> CLUSTERING PREVIOUS ERROR"
 curl -X POST --data-urlencode @db.json "http://${DOCKER_IP:-"127.0.0.1"}:8000/rdkit_cluster/cluster_simple/?threshold=0.5&fp_method=morgan&sim_method=tanimoto" > out.test_three
-cmp --silent out.test_two out.test_three_check && echo "TEST PASSED" || echo "TEST FAILED"
+cmp --silent out.test_three out.test_three_check && echo "TEST PASSED" || echo "TEST FAILED"
 rm out.test_three
 sudo docker stop $OUTPUT
 sudo docker rm $OUTPUT
