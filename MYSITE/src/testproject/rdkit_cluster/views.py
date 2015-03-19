@@ -114,9 +114,14 @@ def cluster(request):
 def cluster_simple(request):
         # Read the mols
     # Take the smiles in the request object
+    print "THIS IS REQUEST", request
+    print "END OF REQUEST"
     print "THIS IS REQUEST.POST: ", request.POST
     print "END OF REQUEST.POST"
-    screen_lib = dict(request.POST).keys()[0]
+    try:
+        screen_lib = dict(request.POST).keys()[0]
+    except IndexError:
+        return HttpResponse("YOU MUST SPECIFY A LIBRARY")
     print screen_lib
     screen_lib = ast.literal_eval(str(screen_lib))
     # Get the library

@@ -114,7 +114,11 @@ def screen_simple(request):
     print "INSIDE FUNCTION"
     # Take the smiles in the request object
     print request.GET
-    screen_lib = dict(request.POST).keys()[0]
+    # Now get the library
+    try:
+        screen_lib = dict(request.POST).keys()[0]
+    except IndexError:
+        return HttpResponse("YOU MUST SPECIFY A LIBRARY")
     screen_lib = ast.literal_eval(str(screen_lib))
     # Get the library
     libm = LibMethods(screen_lib)
