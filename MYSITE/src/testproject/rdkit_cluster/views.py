@@ -114,7 +114,8 @@ def cluster(request):
 def cluster_simple(request):
         # Read the mols
     # Take the smiles in the request object
-    print request.POST
+    print "THIS IS REQUEST.POST: ", request.POST
+    print "END OF REQUEST.POST"
     screen_lib = dict(request.POST).keys()[0]
     print screen_lib
     screen_lib = ast.literal_eval(str(screen_lib))
