@@ -101,6 +101,10 @@ def cluster(request):
     # Take the smiles in the request object
     my_j = request.body
     my_json = ast.literal_eval(my_j)
+    if "mol_type" in my_json:
+        mol_tye = my_json["mol_type"]
+    else:
+        mol_type = "JSON"
     if "SCREEN_LIB" in my_json:
         screen_lib = my_json["SCREEN_LIB"]
     else:
