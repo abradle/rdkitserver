@@ -16,10 +16,16 @@ def index(request):
     return HttpResponse("WELCOME TO INDEX")
 
 
-def process_input(fp_method, sim_method, mols, threshold):
+def process_input(fp_method, sim_method, screen_lib, screen_type, threshold):
     # Now run the process
     # Get the library
     # Get the fps
+    libm = LibMethods(screen_lib, screen_type)
+    if not libm:
+        return HttpRepsonse("NOT RECOGNISED UPLOAD TYPE" + screen_type)
+    mols = libm.get_mols()
+    if not mols:
+        return HttpRepsonse("NO VALID MOLECULES!!!")
     fpm = FPMethods(fp_method)
     if not fpm:
         return HttpRepsonse("NOT A REGISTERED FINGERPRINT METHOD -> " + fp_method)
@@ -85,7 +91,7 @@ def cluster_mol_body(request):
     else:
         threshold = 0.7
     # Now do the actual processing
-    return process_input(fp_method, sim_method, mols, threshold)
+    return process_input(fp_method, sim_method,screen_lib, mol_type, threshold)
 
 @csrf_exempt
 def cluster(request):
@@ -99,9 +105,6 @@ def cluster(request):
         screen_lib = my_json["SCREEN_LIB"]
     else:
         return HttpResponse("MUST SPECIFY COMPOUNDS TO CLUSTER")
-     # Get the library
-    libm = LibMethods(screen_lib)
-    mols = libm.get_mols()
     # Make the fingerprints
     if "FP_METHOD" in my_json:
         fp_method = my_json["FP_METHOD"]
@@ -116,7 +119,7 @@ def cluster(request):
         threshold = float(my_json["THRESHOLD"])
     else:
         threshold = 0.7
-    return process_input(fp_method, sim_method, mols, threshold)
+    return process_input(fp_method, sim_method, screen_lib, mol_type, threshold)
 
 
 
@@ -130,9 +133,11 @@ def cluster_simple(request):
         return HttpResponse("YOU MUST UPLOAD A LIBRARY")
     # Now get the screening lib
     screen_lib = ast.literal_eval(str(screen_lib))
-    # Get the library
-    libm = LibMethods(screen_lib)
-    mols = libm.get_mols()
+    # Get the library type
+    if "MOL_TYPE" in request.POST:
+        mol_type = request.POST["MOL_TYPE"]
+    else:
+        mol_type = "JSON"
     if not mols:
         return HttpRepsonse("NO VALID MOLECULES!!!"
     # Make the fingerprints
@@ -148,6 +153,6 @@ def cluster_simple(request):
         threshold = float(request.GET["threshold"])
     else:
         threshold = 0.7
-    return process_input(fp_method, sim_method, mols, threshold)
+    return process_input(fp_method, sim_method, screen_lib, mol_type, threshold)
 
 

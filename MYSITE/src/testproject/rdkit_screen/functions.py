@@ -11,12 +11,25 @@ class FPMethods():
         self.fp_method = fp_method
 # Now define the functions
         self.f_dict = { "morgan": morgan}
+        if self.fp_method not in self.f_dict:
+            return None
     def get_fps(self, mols):
-        # Now set the FP
-        for i,m in enumerate(mols):
-            my_fp = self.f_dict[self.fp_method](m["RDMOL"])
+        error_counter = 0
+        # Now set the FPs by iterating through the list -> get exceptions here
+        for i, m in enumerate(mols):
+            try:
+                my_fp = self.f_dict[self.fp_method](m["RDMOL"])
+            except:
+                error_counter +=1
+                my_fp = None
             mols[i]["FP"] = my_fp
-        return mols
+        if error_counter:
+            print "ERROR CREATING", str(i), "FINGERPRINTS"
+        if error_counter == i:
+            # If they have all failed then fail
+            return None
+        else:
+            return mols
 
 def parse_json_mols(mols):
     """Function to parse json mol objs"""

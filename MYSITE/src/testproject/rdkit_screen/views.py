@@ -12,10 +12,12 @@ import urllib2
 def index(request):
     return HttpResponse("WELCOME TO INDEX")
 
-def process_input(scr_mols, fp_method, sim_method, screen_lib, threshold):
-    # Now run the process
-    # Get the library
-    libm = LibMethods(screen_lib)
+def process_input(scr_mols, fp_method, sim_method, screen_lib, threshold, screen_type="JSON"):
+    # Now run the proces
+    # Get rhe library
+    libm = LibMethods(screen_lib, screen_type)
+    if not libm:
+        return HttpRepsonse("NOT RECOGNISED UPLOAD TYPE" + screen_type)
     mols = libm.get_mols()
     if not mols:
         return HttpRepsonse("NO VALID MOLECULES!!!")
@@ -128,15 +130,14 @@ def screen_simple(request):
     # Take the smiles in the request object
     print request.GET
     # Now get the library
+    if "MOL_TYPE" in request.POST:
+        mol_type = request.POST["MOL_TYPE"]
+    else:
+        mol_type = "JSON"
     try:
         screen_lib = dict(request.POST).keys()[0]
     except IndexError:
         return HttpResponse("YOU MUST UPLOAD A LIBRARY")
-    screen_lib = ast.literal_eval(str(screen_lib))
-    # Get the library
-    libm = LibMethods(screen_lib)
-    mols = libm.get_mols()
-    # Make the fingerprints
     if "fp_method" in request.GET:
         fp_method = request.GET["fp_method"]
     else:
@@ -156,4 +157,4 @@ def screen_simple(request):
     else:
         return HttpResponse("You must state a SMILES")
     # Now return the output
-    return process_input(scr_mols, fp_method, sim_method, screen_lib, threshold)
+    return process_input(scr_mols, fp_method, sim_method, screen_lib, threshold, mol_type)
