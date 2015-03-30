@@ -21,24 +21,34 @@ def process_input(fp_method, sim_method, mols, threshold):
     # Get the library
     # Get the fps
     fpm = FPMethods(fp_method)
+    if not fpm:
+        return HttpRepsonse("NOT A REGISTERED FINGERPRINT METHOD -> " + fp_method)
+    # Now get the fingerprints
     screen_fps = fpm.get_fps(mols)
-    # Get the distance matrix for my mol(s)
+    if not screen_fps:
+        return HttpRepsonse("ERROR PRODUCING FINGERPRINTS (FOR SCREENING LIBRARY)")
+    # Now get the similarity metric
     simm = SimMethods(sim_method)
+    if not simm:
+        return HttpRepsonse("NOT A VALID SIMILARIY METRIC")
+    # Now prodcue the distance matric
     dists = []
     nfps = len(screen_fps)
-    for i in range(1,nfps):
+    for i in range(1, nfps):
         sims = [x["values"]["similarity"] for x in simm.find_sim(screen_fps[i], screen_fps[:i], -1.0)]
         # The mol(1) is the smiles of the mol
-        dists.extend([1-x for x in sims])
+        dists.extend([1 - x for x in sims])
     # now cluster the data:
-    cs = Butina.ClusterData(dists,nfps,threshold,isDistData=True)
-    # Out mols
+    cs = Butina.ClusterData(dists, nfps, threshold, isDistData=True)
+    # Out mols is the list for caputring the clusters
     out_mols = []
+    # Now loop trhough the clusters outputing the results
     for i, c in enumerate(cs):
         for mol_ind in c:
             my_mol = mols[mol_ind]
             my_mol["values"]["cluster"] = i
             out_mols.append(my_mol)
+    # Now retrun the response
     return HttpResponse(json.dumps(remove_keys(out_mols)))
 
 @csrf_exempt
@@ -114,19 +124,17 @@ def cluster(request):
 def cluster_simple(request):
         # Read the mols
     # Take the smiles in the request object
-    print "THIS IS REQUEST", request
-    print "END OF REQUEST"
-    print "THIS IS REQUEST.POST: ", request.POST
-    print "END OF REQUEST.POST"
     try:
         screen_lib = dict(request.POST).keys()[0]
     except IndexError:
-        return HttpResponse("YOU MUST SPECIFY A LIBRARY")
-    print screen_lib
+        return HttpResponse("YOU MUST UPLOAD A LIBRARY")
+    # Now get the screening lib
     screen_lib = ast.literal_eval(str(screen_lib))
     # Get the library
     libm = LibMethods(screen_lib)
     mols = libm.get_mols()
+    if not mols:
+        return HttpRepsonse("NO VALID MOLECULES!!!"
     # Make the fingerprints
     if "fp_method" in request.GET:
         fp_method = request.GET["fp_method"]
@@ -136,7 +144,6 @@ def cluster_simple(request):
         sim_method = request.GET["sim_method"]
     else:
         sim_method = "tanimoto"
-
     if "threshold" in request.GET:
         threshold = float(request.GET["threshold"])
     else:

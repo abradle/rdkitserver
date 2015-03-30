@@ -17,12 +17,24 @@ def process_input(scr_mols, fp_method, sim_method, screen_lib, threshold):
     # Get the library
     libm = LibMethods(screen_lib)
     mols = libm.get_mols()
+    if not mols:
+        return HttpRepsonse("NO VALID MOLECULES!!!")
     # Get the fps
     fpm = FPMethods(fp_method)
+    # Error if the fingerprint method is no good
+    if not fpm:
+        return HttpRepsonse("NOT A REGISTERED FINGERPRINT METHOD -> " + fp_method)
+    # Now get the fingerprints
     screen_fps = fpm.get_fps(mols)
+    if not screen_fps:
+        return HttpRepsonse("ERROR PRODUCING FINGERPRINTS (FOR SCREENING LIBRARY)")
     # Get the fp for my mol(s)
     mol_fps = fpm.get_fps(scr_mols)
+    if not mol_fps:
+        return HttpRepsonse("ERROR PRODUCING FINGERPRINTS (FOR MOLECULES)")
     simm = SimMethods(sim_method)
+    if not simm:
+        return HttpRepsonse("NOT A VALID SIMILARIY METRIC")
     # Store the result in this
     out_d = {}
     for i, mol in enumerate(mol_fps):
@@ -119,7 +131,7 @@ def screen_simple(request):
     try:
         screen_lib = dict(request.POST).keys()[0]
     except IndexError:
-        return HttpResponse("YOU MUST SPECIFY A LIBRARY")
+        return HttpResponse("YOU MUST UPLOAD A LIBRARY")
     screen_lib = ast.literal_eval(str(screen_lib))
     # Get the library
     libm = LibMethods(screen_lib)
@@ -143,5 +155,5 @@ def screen_simple(request):
         scr_mols = [{"RDMOL": Chem.MolFromSmiles(str(x))} for x in str(smiles).split(".")]
     else:
         return HttpResponse("You must state a SMILES")
-
+    # Now return the output
     return process_input(scr_mols, fp_method, sim_method, screen_lib, threshold)
