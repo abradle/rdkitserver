@@ -12,7 +12,7 @@ class FPMethods():
 # Now define the functions
         self.f_dict = { "morgan": morgan}
         if self.fp_method not in self.f_dict:
-            return None
+            self.fp_method = None
     def get_fps(self, mols):
         error_counter = 0
         # Now set the FPs by iterating through the list -> get exceptions here
@@ -25,7 +25,7 @@ class FPMethods():
             mols[i]["FP"] = my_fp
         if error_counter:
             print "ERROR CREATING", str(i), "FINGERPRINTS"
-        if error_counter == i:
+        if error_counter == i+1:
             # If they have all failed then fail
             return None
         else:
@@ -34,7 +34,7 @@ class FPMethods():
 def parse_json_mols(mols):
     """Function to parse json mol objs"""
     out_mols = []
-    for i,m in enumerate(mols):
+    for i, m in enumerate(mols):
         rdmol = rdkit_parse.parse_mol_json(m)
         if rdmol is None:
             print "NONE MOL"
@@ -65,19 +65,24 @@ def sdf_mols_to_json(mols):
     return out_mols
 
 
+def parse_sdf_mols(mols):
+    """Function to get a json of molecules from an SDF"""
+    my_json = sdf_mols_to_json(mols)
+    return parse_json_mols(my_json)    
+
+
 class LibMethods():
     def __init__(self, lib_mols, lib_type="JSON"):
         self.lib_mols = lib_mols
-        self.lib_type = lib_type
-    def get_mols(self):
-        if self.lib_type == "JSON":
-            my_mols = parse_json_mols(self.lib_mols)
-        elif self.lib_type == "SDF":
-            my_json = sdf_mols_to_json(self.lib_mols)
-            my_mols = parse_json_mols(my_json)
+        self.f_d = {"JSON": parse_json_mols, "SDF": parse_sdf_mols}
+        if lib_type in self.f_d:
+            self.lib_type = lib_type
         else:
-            print "NOT RECOGNISED TYPE"
-            return None
+            self.lib_type = None
+
+    def get_mols(self):
+        # Get the molecules
+        my_mols = self.f_d[self.lib_type](self.lib_mols)
         my_mols = add_values_dict(my_mols)
         return my_mols
 
@@ -89,6 +94,8 @@ class SimMethods():
     def __init__(self, sim_meth):
         self.sim_meth = sim_meth
         self.f_dict = {"tanimoto": tanimoto}
+        if self.sim_meth not in self.f_dict:
+            self.sim_meth = None
     def find_sim(self, mol, lib_in, threshold):
         my_sim = self.f_dict[self.sim_meth](mol["FP"],[x["FP"] for x in lib_in])
         # Now make the out list to return

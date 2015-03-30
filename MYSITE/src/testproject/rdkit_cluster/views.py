@@ -21,22 +21,22 @@ def process_input(fp_method, sim_method, screen_lib, screen_type, threshold):
     # Get the library
     # Get the fps
     libm = LibMethods(screen_lib, screen_type)
-    if not libm:
-        return HttpRepsonse("NOT RECOGNISED UPLOAD TYPE" + screen_type)
+    if libm.lib_type is None:
+        return HttpResponse("NOT RECOGNISED UPLOAD TYPE" + screen_type)
     mols = libm.get_mols()
     if not mols:
-        return HttpRepsonse("NO VALID MOLECULES!!!")
+        return HttpResponse("NO VALID MOLECULES!!!")
     fpm = FPMethods(fp_method)
-    if not fpm:
-        return HttpRepsonse("NOT A REGISTERED FINGERPRINT METHOD -> " + fp_method)
+    if not fpm.fp_method:
+        return HttpResponse("NOT A REGISTERED FINGERPRINT METHOD -> " + fp_method)
     # Now get the fingerprints
     screen_fps = fpm.get_fps(mols)
     if not screen_fps:
-        return HttpRepsonse("ERROR PRODUCING FINGERPRINTS (FOR SCREENING LIBRARY)")
+        return HttpResponse("ERROR PRODUCING FINGERPRINTS (FOR SCREENING LIBRARY)")
     # Now get the similarity metric
     simm = SimMethods(sim_method)
-    if not simm:
-        return HttpRepsonse("NOT A VALID SIMILARIY METRIC")
+    if not simm.sim_meth:
+        return HttpResponse("NOT A VALID SIMILARIY METRIC")
     # Now prodcue the distance matric
     dists = []
     nfps = len(screen_fps)
@@ -134,12 +134,10 @@ def cluster_simple(request):
     # Now get the screening lib
     screen_lib = ast.literal_eval(str(screen_lib))
     # Get the library type
-    if "MOL_TYPE" in request.POST:
-        mol_type = request.POST["MOL_TYPE"]
+    if "mol_type" in request.GET:
+        mol_type = request.GET["mol_type"]
     else:
         mol_type = "JSON"
-    if not mols:
-        return HttpRepsonse("NO VALID MOLECULES!!!"
     # Make the fingerprints
     if "fp_method" in request.GET:
         fp_method = request.GET["fp_method"]
