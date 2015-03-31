@@ -13,15 +13,15 @@ sleep 1
 echo 5
 sleep 1
 echo "RUNNING TEST ONE -> CLUSTERING"
-curl -X POST --data-urlencode @smis.json "http://${DOCKER_IP:-"127.0.0.1"}:8000/rdkit_cluster/cluster_simple/?threshold=0.5&fp_method=morgan&sim_method=tanimoto" > out.test_one
+curl -X POST -H "Content-Type: application/json" --data-urlencode @smis.json "http://${DOCKER_IP:-"127.0.0.1"}:8000/rdkit_cluster/cluster_simple/?threshold=0.5&fp_method=morgan&sim_method=tanimoto" > out.test_one
 cmp --silent out.test_one out.test_one_check && echo "TEST PASSED" || echo "TEST FAILED"
 rm out.test_one
 echo "RUNNING TEST TWO -> SCREENING"
-curl -X POST --data-urlencode @smis.json "http://${DOCKER_IP:-"127.0.0.1"}:8000/rdkit_screen/screen_simple/?smiles=CCCCCC&threshold=0.5&fp_method=morgan&sim_method=tanimoto" > out.test_two
+curl -X POST -H "Content-Type: application/json" --data-urlencode @smis.json "http://${DOCKER_IP:-"127.0.0.1"}:8000/rdkit_screen/screen_simple/?smiles=CCCCCC&threshold=0.5&fp_method=morgan&sim_method=tanimoto" > out.test_two
 cmp --silent out.test_two out.test_two_check && echo "TEST PASSED" || echo "TEST FAILED"
 rm out.test_two
 echo "RUNNING TEST THREE -> CLUSTERING PREVIOUS ERROR"
-curl -X POST --data-urlencode @db.json "http://${DOCKER_IP:-"127.0.0.1"}:8000/rdkit_cluster/cluster_simple/?threshold=0.5&fp_method=morgan&sim_method=tanimoto" > out.test_three
+curl -X POST -H "Content-Type: application/json" --data-urlencode @db.json "http://${DOCKER_IP:-"127.0.0.1"}:8000/rdkit_cluster/cluster_simple/?threshold=0.5&fp_method=morgan&sim_method=tanimoto" > out.test_three
 cmp --silent out.test_three out.test_three_check && echo "TEST PASSED" || echo "TEST FAILED"
 rm out.test_three
 sudo docker stop $OUTPUT

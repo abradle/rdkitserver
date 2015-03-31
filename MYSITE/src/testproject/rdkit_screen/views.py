@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+import urllib
 from django.http import HttpResponse
 from rdkit_screen.functions import SimMethods, LibMethods, FPMethods
 from rdkit import Chem
@@ -128,19 +128,21 @@ def screen(request):
 @csrf_exempt
 def screen_simple(request):
     """View to take a smiles and then screen against a known library of actives"""
-    print "INSIDE FUNCTION"
+    import urllib
     # Take the smiles in the request object
-    print request.GET
     # Now get the library
-    if "mol_type" in request.GET:
-        mol_type = request.GET["mol_type"]
-    else:
+    if "dump_out" in request.GET:
+        return HttpResponse(json.dumps(str(request))+"\nBODY:" + request.body)
+    if request.META["CONTENT_TYPE"] == "application/json":
+        screen_lib = ast.literal_eval(urllib.unquote(request.body).decode('utf8'))
         mol_type = "JSON"
-    try:
-        screen_lib = dict(request.POST).keys()[0]
-    except IndexError:
-        return HttpResponse("YOU MUST UPLOAD A LIBRARY")
-    screen_lib = ast.literal_eval(str(screen_lib))
+    else:
+        try:
+            screen_lib = dict(request.POST).keys()[0]
+            screen_lib = ast.literal_eval(str(screen_lib))
+            mol_type = "JSON"
+        except IndexError:
+            return HttpResponse("YOU MUST UPLOAD A LIBRARY")
     if "fp_method" in request.GET:
         fp_method = request.GET["fp_method"]
     else:

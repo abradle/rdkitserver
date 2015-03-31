@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from json_function.json_parse import remove_keys
 import ast
 import urllib2
+import urllib
 
 def index(request):
     return HttpResponse("WELCOME TO INDEX")
@@ -131,12 +132,19 @@ def cluster(request):
 def cluster_simple(request):
         # Read the mols
     # Take the smiles in the request object
-    try:
-        screen_lib = dict(request.POST).keys()[0]
-    except IndexError:
-        return HttpResponse("YOU MUST UPLOAD A LIBRARY")
+    if "dump_out" in request.GET:
+        return HttpResponse(json.dumps(str(request))+"\nBODY:" + request.body)
+    if request.META["CONTENT_TYPE"] == "application/json":
+        screen_lib = ast.literal_eval(urllib.unquote(request.body).decode('utf8'))
+        mol_type = "JSON"
+    else:
+        try:
+            screen_lib = dict(request.POST).keys()[0]
+            screen_lib = ast.literal_eval(str(screen_lib))
+            mol_type = "JSON"
+        except IndexError:
+            return HttpResponse("YOU MUST UPLOAD A LIBRARY")
     # Now get the screening lib
-    screen_lib = ast.literal_eval(str(screen_lib))
     # Get the library type
     if "mol_type" in request.GET:
         mol_type = request.GET["mol_type"]
