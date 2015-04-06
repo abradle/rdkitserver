@@ -7,6 +7,8 @@ from rdkit.Chem.Fingerprints import FingerprintMols
 from rdkit.Chem.AtomPairs import Pairs
 from usrcat.toolkits.rd import generate_moments
 from rdkit.Chem import AllChem
+import math, numpy
+
 
 def morgan(m):
     return AllChem.GetMorganFingerprintAsBitVect(m,2)
@@ -26,7 +28,7 @@ def atom_pairs(m):
 
 def usrcat(m):
     # Take in the molecule
-    AllChem.EmbedMultipleConfs(m)
+    AllChem.EmbedMultipleConfs(m, 1)
     # generates the USRCAT moments for all conformers
     moments = generate_moments(m)
     return moments    
@@ -135,10 +137,15 @@ def inverse_man(mol, lib_in):
     out_ans = []
     for lib_mol in lib_in:
         my_sum = 0
-        for item in lib_mol["FP"]:
-            for other_item in mol["FP"]:
+        if type(lib_mol[0]) != numpy.ndarray:
+            out_ans.append(0.0)
+            print type(lib_mol[0])
+            continue
+        for item in lib_mol[0]:
+            for other_item in mol[0]:
                 my_sum += math.fabs(item-other_item)
-        out_ans.append(1.0 / (1.0 + (my_sum / float(len(mol["FP"])))))
+        out_ans.append(1.0 / (1.0 + (my_sum / float(len(mol[0])))))
+    print out_ans
     return out_ans
 
 class SimMethods():
