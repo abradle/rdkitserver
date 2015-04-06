@@ -18,8 +18,8 @@ def parse_mol_simple(my_type, txt):
         if mol is None:
             mol = fix_mol(Chem.MolFromMolBlock(txt.strip(), False))
     elif my_type == "smiles":
-        # Assumes that smiles is the first column
-        mol = Chem.MolFromSmiles(txt.split()[0])
+        # Assumes that smiles is the first column -> and splits on chemaxon
+        mol = Chem.MolFromSmiles(txt.split()[0].split(":")[0])
     elif my_type == "inchi":
         # Assumes that INCHI is the first column
         mol = Chem.MolFromInchi(my_txt.split()[0], my_vals)
