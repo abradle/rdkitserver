@@ -12,7 +12,7 @@ import urllib2
 def index(request):
     return HttpResponse("WELCOME TO INDEX")
 
-def process_input(scr_mols, fp_method, sim_method, screen_lib, threshold, screen_type="JSON"):
+def process_input(scr_mols, fp_method, sim_method, screen_lib, threshold, screen_type="JSON", params=None):
     # Now run the proces
     # Get rhe library
     libm = LibMethods(screen_lib, screen_type)
@@ -151,7 +151,10 @@ def screen_simple(request):
         sim_method = request.GET["sim_method"]
     else:
         sim_method = "tanimoto"
-
+    if "params" in request.GET:
+        params = request.GET["params"].split(",")
+    else:
+        params = None
     if "threshold" in request.GET:
         threshold = float(request.GET["threshold"])
     else:
@@ -162,4 +165,4 @@ def screen_simple(request):
     else:
         return HttpResponse("You must state a SMILES")
     # Now return the output
-    return process_input(scr_mols, fp_method, sim_method, screen_lib, threshold, mol_type)
+    return process_input(scr_mols, fp_method, sim_method, screen_lib, threshold, mol_type, params)

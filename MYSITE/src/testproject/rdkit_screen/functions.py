@@ -2,16 +2,43 @@ from rdkit import Chem
 from rdkit.Chem import AllChem
 from rdkit.Chem import DataStructs
 from mol_parsing import rdkit_parse
+from rdkit.Chem import MACCSkeys
+from rdkit.Chem.Fingerprints import FingerprintMols
+from rdkit.Chem.AtomPairs import Pairs
+from usrcat.toolkits.rd import generate_moments
+from rdkit.Chem import AllChem
 
 def morgan(m):
     return AllChem.GetMorganFingerprintAsBitVect(m,2)
+
+
+def maccs(m):
+    return MACCSkeys.GenMACCSKeys(m)
+
+
+def rdkit_topo(m):
+    return FingerprintMols.FingerprintMol(m)
+
+
+def atom_pairs(m):
+    return Pairs.GetAtomPairFingerprintAsBitVect(m)
+
+
+def usrcat(m):
+    # Take in the molecule
+    AllChem.EmbedMultipleConfs(m)
+    # generates the USRCAT moments for all conformers
+    moments = generate_moments(m)
+    return moments    
+
 
 class FPMethods():
     def __init__(self, fp_method):
         self.fp_method = fp_method
 # Now define the functions
-        self.f_dict = { "morgan": morgan}
+        self.f_dict = {"morgan": morgan, "maccs": maccs, "rdkit_topo": rdkit_topo, "atom_pairs": atom_pairs, "usrcat": usrcat}
         if self.fp_method not in self.f_dict:
+            print "NOT ACCEPTED METHOD"
             self.fp_method = None
     def get_fps(self, mols):
         error_counter = 0
@@ -24,7 +51,7 @@ class FPMethods():
                 my_fp = None
             mols[i]["FP"] = my_fp
         if error_counter:
-            print "ERROR CREATING", str(i), "FINGERPRINTS"
+            print "ERROR CREATING", str(error_counter), "FINGERPRINTS"
         if error_counter == i+1:
             # If they have all failed then fail
             return None
@@ -86,16 +113,41 @@ class LibMethods():
         my_mols = add_values_dict(my_mols)
         return my_mols
 
+def cosine(mol, lib_in):
+    return DataStructs.BulkCosineSimilarity(mol,lib_in)
+
+
+def tversky(mol,lib_in):
+    return DataStructs.BulkTverskySimilarity(mol,lib_in,0.3,0.7)
+
+
+def dice(mol, lib_in):
+    return DataStructs.BulkDiceSimilarity(mol,lib_in)
+
 
 def tanimoto(mol, lib_in):
     return DataStructs.BulkTanimotoSimilarity(mol,lib_in)
 
+
+def inverse_man(mol, lib_in):
+    """Function to find  the inverse manhattan distance between """
+    # First find the absolute distance and sum them
+    out_ans = []
+    for lib_mol in lib_in:
+        my_sum = 0
+        for item in lib_mol["FP"]:
+            for other_item in mol["FP"]:
+                my_sum += math.fabs(item-other_item)
+        out_ans.append(1.0 / (1.0 + (my_sum / float(len(mol["FP"])))))
+    return out_ans
+
 class SimMethods():
     def __init__(self, sim_meth):
         self.sim_meth = sim_meth
-        self.f_dict = {"tanimoto": tanimoto}
+        self.f_dict = {"tanimoto": tanimoto, "dice": dice, "cosine": cosine, "tversky": tversky, "inverse_man": inverse_man}
         if self.sim_meth not in self.f_dict:
             self.sim_meth = None
+            print "SIMILARIRY METHOD NOT ALLOWED"
     def find_sim(self, mol, lib_in, threshold):
         my_sim = self.f_dict[self.sim_meth](mol["FP"],[x["FP"] for x in lib_in])
         # Now make the out list to return

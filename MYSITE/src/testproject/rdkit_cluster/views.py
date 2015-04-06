@@ -17,7 +17,7 @@ def index(request):
     return HttpResponse("WELCOME TO INDEX")
 
 
-def process_input(fp_method, sim_method, screen_lib, screen_type, threshold):
+def process_input(fp_method, sim_method, screen_lib, screen_type, threshold, params=None):
     # Now run the process
     # Get the library
     # Get the fps
@@ -155,6 +155,10 @@ def cluster_simple(request):
         fp_method = request.GET["fp_method"]
     else:
         fp_method = "morgan"
+    if "params" in request.GET:
+        params = request.GET["params"].split(",")
+    else:
+        params = None
     if "sim_method" in request.GET:
         sim_method = request.GET["sim_method"]
     else:
@@ -163,6 +167,6 @@ def cluster_simple(request):
         threshold = float(request.GET["threshold"])
     else:
         threshold = 0.7
-    return process_input(fp_method, sim_method, screen_lib, mol_type, threshold)
+    return process_input(fp_method, sim_method, screen_lib, mol_type, threshold, params)
 
 
