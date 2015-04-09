@@ -87,9 +87,7 @@ def add_values_dict(my_mols):
 def sdf_mols_to_json(mols):
     """Function to parse SDF mols and return a JSON back"""
     out_mols = []
-    
-    for i,m in enumerate(mols.split("$$$$")):
-        print m
+    for i,m in enumerate(mols.split("$$$$\n")):
         out_mols.append({"source": m, "format": "mol", "values": {}})
     return out_mols
 

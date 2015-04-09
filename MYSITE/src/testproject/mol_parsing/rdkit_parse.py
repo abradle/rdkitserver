@@ -2,6 +2,8 @@
 import sys
 from rdkit import Chem
 from sanifix import fix_mol
+
+
 def parse_mol_simple(my_type, txt):
     """Function to parse individual mols given a type"""
     if my_type == "mol":
