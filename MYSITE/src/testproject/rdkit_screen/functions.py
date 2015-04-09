@@ -143,8 +143,7 @@ def inverse_man(mol, lib_in):
             for other_item in mol[0]:
                 my_sum += math.fabs(item-other_item)
         out_ans.append(1.0 / (1.0 + (my_sum / float(len(mol[0])))))
-    print out_ans
-    return out_ans
+    return max(out_ans)
 
 class SimMethods():
     def __init__(self, sim_meth):
