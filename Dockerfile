@@ -19,6 +19,8 @@ ADD set_nginx.bash /set_nginx.bash
 ENV SERVER_NAME localhost
 ENV SERVER_PORT 9000
 ADD MYSITE /MYSITE
+ADD USRCAT /USRCAT
+RUN cd /USRCAT && python setup.py install
 RUN mkdir /MYSITE/logs/
 RUN python /MYSITE/src/testproject/manage.py collectstatic --noinput
 CMD cd /MYSITE && bash /set_nginx.bash && service nginx restart && bash /run_gunicorn.bash
