@@ -18,7 +18,7 @@ print "Running mols screen test"
 # Read in the json for the mols
 in_mols = ast.literal_eval(open("mols.json").read())
 # Read in the json for the smis
-in_smis = ast.literal_eval(open("smis.json").read())
+in_smis = ast.literal_eval(open("smishort.json").read())
 # Now set the url - this changes each time you run
 url = 'http://'+docker_ip+':8000/rdkit_screen/screen/'
 # Now set the values in the get request - this is a simple JSON
@@ -64,6 +64,7 @@ f = urllib2.urlopen(req)
 # Read the response
 response = f.read()
 # Print the response
+print response
 try:
     if len(ast.literal_eval(response)) == 4:
         print "TEST PASSED"
