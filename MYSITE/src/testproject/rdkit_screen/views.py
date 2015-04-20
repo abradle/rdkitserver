@@ -30,5 +30,4 @@ def screen_simple(request):
     else:
         return HttpResponse("You must state a SMILES")
     # Now handle this file upload 
-
     return process_input(fp_method, sim_method, screen_lib, mol_type, threshold, params=None, scr_mols=scr_mols)

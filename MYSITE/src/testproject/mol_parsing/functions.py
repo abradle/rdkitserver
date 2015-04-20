@@ -1,5 +1,5 @@
 import ast
-import urllib
+import urllib,zlib
 from rdkit_screen.functions import SimMethods, LibMethods, FPMethods
 from rdkit_cluster.functions import ClusterMethods
 from rdkit import Chem
@@ -8,7 +8,7 @@ from rdkit.ML.Cluster import Butina
 from rdkit.ML.Cluster import Butina
 from django.http import HttpResponse
 from json_function.json_parse import remove_keys
-
+from StringIO import StringIO
 
 def do_screen(simm, screen_fps, threshold, mol_fps):
     """Function to peform a scren on a library of mols"""
@@ -80,15 +80,26 @@ def process_input(fp_method, sim_method, screen_lib, screen_type, threshold, par
 
 def find_lib_type(request):
     """Function to handle different types of incoming molecule libraries"""
+    if "HTTP_CONTENT_ENCODING" in request.META:
+        if request.META["HTTP_CONTENT_ENCODING"] == "gzip":
+            in_data = urllib.unquote(request.body)
+            compressedFile = StringIO(in_data)
+            decompressedFile = gzip.GzipFile(fileobj=compressedFile)
+            data = decompressedFile.read()
+        else:
+            print "NOT VALID INPUT ENCODING"
+            return None, "DISALLOWED ENCODING TYPE"
+    else:
+        data = urllib.unquote(request.body).decode('utf8')
     if request.META["CONTENT_TYPE"] == "application/json":
         try:
-            screen_lib = ast.literal_eval(urllib.unquote(request.body).decode('utf8'))
+            screen_lib = ast.literal_eval(data)
             mol_type = "JSON"
         except:
             print "NOT VALID JSON"
             return None, "NOT VALID JSON"
     elif request.META["CONTENT_TYPE"] == "chemical/x-mdl-sdfile":
-        screen_lib = urllib.unquote(request.body).decode('utf8')
+        screen_lib = data
         mol_type = "SDF"
     else:
         try:
