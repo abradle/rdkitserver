@@ -25,9 +25,8 @@ curl -X POST -H "Accept-Encoding: gzip" -H "Content-Type: application/json" --da
 cmp --silent out.test_three out.test_three_check && echo "TEST PASSED" || echo "TEST FAILED"
 rm out.test_three
 echo "RUNNING TEST FOUR -> GZIP IN GZIP OUT"
-curl -X POST -H "Accept-Encoding: gzip" -H "Content-Encoding" -H "Content-Type: application/json" --data-urlencode @db.json.gz "http://${DOCKER_IP:-"127.0.0.1"}:8000/rdkit_cluster/cluster_simple/?threshold=0.5&fp_method=morgan&sim_method=tanimoto" > out.test_four.gz && gzip -d out.test_four.gz
+curl -X POST -H "Accept-Encoding: gzip" -H "Content-Encoding: gzip" -H "Content-Type: application/json" --data-urlencode @db.json.gz "http://${DOCKER_IP:-"127.0.0.1"}:8000/rdkit_cluster/cluster_simple/?threshold=0.5&fp_method=morgan&sim_method=tanimoto" > out.test_four.gz && gzip -d out.test_four.gz
 cmp --silent out.test_four out.test_three_check && echo "TEST PASSED" || echo "TEST FAILED"
-rm out.test_three
-
+rm out.test_four
 sudo docker stop $OUTPUT
 sudo docker rm $OUTPUT
