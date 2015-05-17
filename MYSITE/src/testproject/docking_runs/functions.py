@@ -70,7 +70,7 @@ def register_lib(in_mols, lib_name=None):
     [out_f.write(x) for x in in_mols if x]
     out_f.close()
     new_lib.sdf_info = open(my_sd).read()
-    mew_lib.num_mols = len([x for x in in_mols if x])
+    new_lib.num_mols = len([x for x in in_mols if x])
     if lib_name:
         new_lib.lib_name = lib_name
     # Save the SD file in the directory
