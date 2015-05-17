@@ -26,10 +26,12 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+BROKER_URL = 'django://'
 
 # Application definition
 
 INSTALLED_APPS = (
+    'docking_runs', 
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,8 +40,13 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rdkit_cluster',
     'rdkit_screen',
+    'docking_runs',
+    'kombu.transport.django',
 )
 
+CELERY_IMPORTS = (
+'docking_runs',
+)
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

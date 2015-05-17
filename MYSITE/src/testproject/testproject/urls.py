@@ -7,6 +7,7 @@ urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
     url(r'^rdkit_cluster/', include('rdkit_cluster.urls',namespace="rdkit_cluster")),
     url(r'^rdkit_screen/', include('rdkit_screen.urls',namespace="rdkit_screen")),
+    url(r'^docking_runs/', include('docking_runs.urls',namespace="docking_runs")),
 
 
 )
