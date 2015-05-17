@@ -22,5 +22,6 @@ ADD MYSITE /MYSITE
 ADD USRCAT /USRCAT
 RUN cd /USRCAT && python setup.py install
 RUN mkdir /MYSITE/logs/
+RUN pip install celery django-celery
 RUN python /MYSITE/src/testproject/manage.py collectstatic --noinput
 CMD cd /MYSITE && bash /set_nginx.bash && service nginx restart && bash /run_gunicorn.bash
