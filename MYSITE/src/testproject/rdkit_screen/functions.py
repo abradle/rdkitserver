@@ -27,8 +27,14 @@ def atom_pairs(m):
 
 
 def usrcat(m):
-    # Take in the molecule
-    AllChem.EmbedMultipleConfs(m, 1)
+    # Take in the molecule and work out the number of rotatable bonds
+    num_rots = AllChem.CalcNumRotatableBonds(m)
+    if num_rots <=7:
+        AllChem.EmbedMultipleConfs(m, 50)
+    elif num_rots <=12:
+        AllChem.EmbedMultipleConfs(m, 200) 
+    else:
+        AllChem.EmbedMultipleConfs(m, 300)
     # generates the USRCAT moments for all conformers
     moments = generate_moments(m)
     return moments    

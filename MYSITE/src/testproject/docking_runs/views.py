@@ -4,7 +4,6 @@ from docking_runs.tasks import start_docking
 from mol_parsing.functions import request_handler
 from django.http import HttpResponse
 import json
-from djutils.decorators import async
 import ast
 from django.views.decorators.csrf import csrf_exempt
 from rdkit_screen.functions import LibMethods
