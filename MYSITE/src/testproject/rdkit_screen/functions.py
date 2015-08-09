@@ -5,7 +5,10 @@ from mol_parsing import rdkit_parse
 from rdkit.Chem import MACCSkeys
 from rdkit.Chem.Fingerprints import FingerprintMols
 from rdkit.Chem.AtomPairs import Pairs
-from usrcat.toolkits.rd import generate_moments
+try:
+    from usrcat.toolkits.rd import generate_moments
+except:
+    print "USRCAT NOT INSTALLED"
 from rdkit.Chem import AllChem
 import math, numpy
 

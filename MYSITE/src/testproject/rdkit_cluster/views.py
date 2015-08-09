@@ -14,11 +14,14 @@ import ast
 import urllib2
 import urllib
 from mol_parsing.functions import request_handler, process_input
-
+import json
 
 def index(request):
     return HttpResponse("WELCOME TO INDEX")
 
+def return_sd(request):
+    out_d = [{"NAME": "SIMPLE"},{"NAME": "NOT SIMPLE"}]
+    return HttpResponse(json.dumps(out_d))
 
 @gzip_page
 @csrf_exempt
