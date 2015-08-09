@@ -17,7 +17,7 @@ RUN ln -s /etc/nginx/sites-available/Mysite /etc/nginx/sites-enabled/Mysite
 RUN rm /etc/nginx/sites-enabled/default
 ADD set_nginx.bash /set_nginx.bash
 ENV SERVER_NAME localhost
-ENV SERVER_PORT 9000
+ENV SERVER_PORT 8000
 ADD MYSITE /MYSITE
 ADD USRCAT /USRCAT
 RUN cd /USRCAT && python setup.py install
