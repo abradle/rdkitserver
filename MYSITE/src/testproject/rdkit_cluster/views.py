@@ -29,5 +29,4 @@ def cluster_simple(request):
         return HttpResponse(json.dumps(str(request))+"\nBODY:" + request.body)
     mol_type, screen_lib, fp_method, sim_method, threshold, params = request_handler(request)
     # Now return the process
-
     return process_input(fp_method, sim_method, screen_lib, mol_type, threshold, params)
