@@ -13,10 +13,56 @@ from mol_parsing.functions import request_handler, process_input
 import json
 
 def index(request):
-    return HttpResponse("WELCOME TO INDEX")
-
-def return_sd(request):
-    out_d = [{"NAME": "SIMPLE"},{"NAME": "NOT SIMPLE"}]
+    out_d = [
+    {
+    "id":"rdkit.screening.simple",
+    "name":"RDKit screening",
+    "description":"RDKit simple descriptor based screening",
+    "tags":["virtualscreening", "screening", "moleculardescriptors", "fingerprints", "rdkit"],
+    "paths":["/Chemistry/Toolkits/RDKit/Screening","Chemistry/Screening"],
+    "owner":"Tim Dudgeon <tdudgeon@informaticsmatters.com>",
+    "layers":["public"],
+    "inputClass":"com.im.lac.types.MoleculeObject",
+    "outputClass":"com.im.lac.types.MoleculeObject",
+    "inputType":"ARRAY",
+    "outputType":"ARRAY",
+    "accessModes":[
+    {
+        "id":"asyncHttp",
+        "name":"Immediate execution",
+        "description":"Execute as an asynchronous REST web service",
+        "executionEndpoint":"screen_simple",
+        "endpointRelative":True,
+        "jobType":"com.im.lac.job.jobdef.AsyncHttpProcessDatasetJobDefinition",
+        "parameters":[
+            {
+            "type":"STRUCTURE",
+            "key":"smiles",
+            "label":"Query",
+            "description":"Query structure (as smiles)"
+            },
+            {
+            "type":"FLOAT",
+            "key":"threshold",
+            "label":"Similarity Cuttoff",
+            "description":"Similarity score cuttoff between 0 and 1 (1 means identical)"
+            },
+            {
+            "type":"STRING",
+            "key":"fp_method",
+            "label":"Fingerprint",
+            "description":"Fingerprint method (morgan, maccs, rdkit_topo, atom_pairs)"
+            },
+            {
+            "type":"STRING",
+            "key":"metric",
+            "label":"Metric",
+            "description":"Comparison metric (tanimoto, cosine, dice, tversky)"
+            }
+        ]
+    }
+    ]
+    }]
     return HttpResponse(json.dumps(out_d))
 
 
