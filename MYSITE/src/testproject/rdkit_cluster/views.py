@@ -23,7 +23,7 @@ def index(request):
     "name":"RDKit clustering",
     "description":"RDKit simple descriptor based clustering",
     "tags":["clustering","rdkit"],
-    "paths":["/Chemistry/Toolkits/RDKit/Clustering","Chemistry/Clustering"],
+    "paths":["/Chemistry/Toolkits/RDKit/Clustering","/Chemistry/Clustering"],
     "owner":"Tim Dudgeon <tdudgeon@informaticsmatters.com>",
     "layers":["public"],
     "inputClass":"com.im.lac.types.MoleculeObject",

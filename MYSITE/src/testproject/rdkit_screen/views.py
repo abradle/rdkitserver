@@ -19,7 +19,7 @@ def index(request):
     "name":"RDKit screening",
     "description":"RDKit simple descriptor based screening",
     "tags":["virtualscreening", "screening", "moleculardescriptors", "fingerprints", "rdkit"],
-    "paths":["/Chemistry/Toolkits/RDKit/Screening","Chemistry/Screening"],
+    "paths":["/Chemistry/Toolkits/RDKit/Screening","/Chemistry/Screening"],
     "owner":"Tim Dudgeon <tdudgeon@informaticsmatters.com>",
     "layers":["public"],
     "inputClass":"com.im.lac.types.MoleculeObject",
