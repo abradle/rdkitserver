@@ -7,6 +7,7 @@ import json, gzip
 from rdkit.ML.Cluster import Butina
 from rdkit.ML.Cluster import Butina
 from django.http import HttpResponse
+from django.http import HttpResponseServerError
 from json_function.json_parse import remove_keys
 from StringIO import StringIO
 
@@ -23,7 +24,7 @@ def do_screen(simm, screen_fps, threshold, mol_fps):
 
 
 def do_clustering(simm, screen_fps, threshold, mols):
-    """Function to peform the clustering fro m alibrary"""
+    """Function to peform the clustering from a library"""
     # Now prodcue the distance matric
     dists = []
     nfps = len(screen_fps)
@@ -53,25 +54,25 @@ def process_input(fp_method, sim_method, screen_lib, screen_type, threshold, par
         return HttpResponse(screen_type)
     libm = LibMethods(screen_lib, screen_type)
     if libm.lib_type is None:
-        return HttpResponse("NOT RECOGNISED UPLOAD TYPE" + screen_type)
+	return HttpResponseServerError("NOT RECOGNISED UPLOAD TYPE" + screen_type)
     mols = libm.get_mols()
     if not mols:
-        return HttpResponse("NO VALID MOLECULES!!!")
+        return HttpResponseServerError("NO VALID MOLECULES!!!")
     fpm = FPMethods(fp_method)
     if not fpm.fp_method:
-        return HttpResponse("NOT A REGISTERED FINGERPRINT METHOD -> " + fp_method)
+        return HttpResponseServerError("NOT A REGISTERED FINGERPRINT METHOD -> " + fp_method)
     # Now get the fingerprints
     screen_fps = fpm.get_fps(mols)
     if not screen_fps:
-        return HttpResponse("ERROR PRODUCING FINGERPRINTS (FOR SCREENING LIBRARY)")
+        return HttpResponseServerError("ERROR PRODUCING FINGERPRINTS (FOR SCREENING LIBRARY)")
     # Now get the similarity metric
     simm = SimMethods(sim_method)
     if not simm.sim_meth:
-        return HttpResponse("NOT A VALID SIMILARIY METRIC")
+        return HttpResponseServerError("NOT A VALID SIMILARIY METRIC")
     if scr_mols:
         mol_fps = fpm.get_fps(scr_mols)
         if not mol_fps:
-            return HttpResponse("ERROR PRODUCING FINGERPRINTS (FOR MOLECULES)")
+            return HttpResponseServerError("ERROR PRODUCING FINGERPRINTS (FOR MOLECULES)")
         else:
             return do_screen(simm, screen_fps, threshold, mol_fps)
     else:
