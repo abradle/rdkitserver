@@ -51,15 +51,18 @@ def index(request):
             "type":"STRING",
             "key":"fp_method",
             "label":"Fingerprint",
-            "description":"Fingerprint method (morgan, maccs, rdkit_topo, atom_pairs)"
+            "values": ["morgan","maccs","rdkit_topo","atom_pairs"],
+            "description":"Fingerprint method"
             },
             {
             "type":"STRING",
             "key":"metric",
             "label":"Metric",
-            "description":"Comparison metric (tanimoto, cosine, dice, tversky)"
+            "values": ["tanimoto","cosine","dice","tversky"],
+            "description":"Similarity comparison metric"
             }
-        ]
+        ],
+        "adapterClassName":"com.im.lac.services.job.service.adapters.HttpGenericParamsJobAdapter"
     }
     ]
     }]

@@ -27,6 +27,6 @@ gunicorn ${DJANGO_WSGI_MODULE}:application \
   --name $NAME \
   --workers $NUM_WORKERS \
   --user=$USER --group=$GROUP \
-  --log-level=debug \
+  --log-level=info \
   --bind=unix:$SOCKFILE\
   --timeout $TIMEOUT

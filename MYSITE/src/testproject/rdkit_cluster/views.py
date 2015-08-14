@@ -41,23 +41,26 @@ def index(request):
         "parameters":[
             {
             "type":"FLOAT",
-            "key":"threshold",
+            "key":"query.threshold",
             "label":"Similarity Cuttoff",
             "description":"Similarity score cuttoff between 0 and 1 (1 means identical)"
             },
             {
             "type":"STRING",
-            "key":"fp_method",
+            "key":"query.fp_method",
             "label":"Fingerprint",
-            "description":"Fingerprint method (morgan, maccs, rdkit_topo, atom_pairs)"
+            "values": ["morgan","maccs","rdkit_topo","atom_pairs"],
+            "description":"Fingerprint method"
             },
             {
             "type":"STRING",
-            "key":"metric",
+            "key":"query.metric",
             "label":"Metric",
-            "description":"Comparison metric (tanimoto, cosine, dice, tversky)"
+            "values": ["tanimoto","cosine","dice","tversky"],
+            "description":"Similarity comparison metric"
             }
-        ]
+        ],
+        "adapterClassName":"com.im.lac.services.job.service.adapters.HttpGenericParamsJobAdapter"
     }
     ]
     }
