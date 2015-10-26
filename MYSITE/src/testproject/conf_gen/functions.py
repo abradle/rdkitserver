@@ -1,5 +1,8 @@
 from rdkit import Chem
-from usrcat.toolkits.rd import generate_moments
+try:
+    from usrcat.toolkits.rd import generate_moments
+except:
+    print "USRCAT NOT INSTALLED"
 from rdkit.Chem import AllChem
 from django.core.exceptions import ValidationError
 from conf_gen.models import *

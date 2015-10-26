@@ -8,6 +8,7 @@ import json, gzip
 from rdkit.ML.Cluster import Butina
 from rdkit.ML.Cluster import Butina
 from django.http import HttpResponse
+from django.http import HttpResponseServerError
 from json_function.json_parse import remove_keys
 import CloseableQueue
 from StringIO import StringIO
@@ -82,7 +83,7 @@ def process_input(fp_method, sim_method, screen_lib, screen_type, threshold, par
     thread.start()
     fpm = FPMethods(fp_method)
     if not fpm.fp_method:
-        return HttpResponse("NOT A REGISTERED FINGERPRINT METHOD -> " + fp_method)
+        return HttpResponseServerError("NOT A REGISTERED FINGERPRINT METHOD -> " + fp_method)
     # Now get the fingerprints
     screen_fps = CloseableQueue.CloseableQueue()
     ### EXECUTE IN THREAD
@@ -94,7 +95,7 @@ def process_input(fp_method, sim_method, screen_lib, screen_type, threshold, par
     # Now get the similarity metric
     simm = SimMethods(sim_method)
     if not simm.sim_meth:
-        return HttpResponse("NOT A VALID SIMILARIY METRIC")
+        return HttpResponseServerError("NOT A VALID SIMILARIY METRIC")
     if scr_mols:
         mol_fps = CloseableQueue.CloseableQueue()
         fpm.get_fps(scr_mols, mol_fps)
