@@ -21,6 +21,7 @@ export PYTHONPATH=$DJANGODIR:$PYTHONPATH:$RDBASE:$RDBASE/lib
 RUNDIR=$(dirname $SOCKFILE)
 test -d $RUNDIR || mkdir -p $RUNDIR
 
+/bin/bash $DJANGODIR/start_celery.bash
 # Start your Django Unicorn
 # Programs meant to be run under supervisor should not daemonize themselves (do not use --daemon)
 gunicorn ${DJANGO_WSGI_MODULE}:application \

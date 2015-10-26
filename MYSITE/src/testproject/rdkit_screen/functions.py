@@ -8,7 +8,8 @@ from rdkit.Chem.AtomPairs import Pairs
 from usrcat.toolkits.rd import generate_moments
 from rdkit.Chem import AllChem
 import math, numpy
-
+import CloseableQueue
+from CloseableQueue import Closed
 
 def morgan(m):
     return AllChem.GetMorganFingerprintAsBitVect(m,2)
@@ -48,60 +49,58 @@ class FPMethods():
         if self.fp_method not in self.f_dict:
             print "NOT ACCEPTED METHOD"
             self.fp_method = None
-    def get_fps(self, mols):
+    def get_fps(self, mols, out_mols):
         error_counter = 0
         # Now set the FPs by iterating through the list -> get exceptions here
-        for i, m in enumerate(mols):
+        while True:
+            try: 
+                m = mols.get()
+            except Closed:
+                break
             try:
                 my_fp = self.f_dict[self.fp_method](m["RDMOL"])
             except:
                 error_counter +=1
                 my_fp = None
-            mols[i]["FP"] = my_fp
+            m["FP"] = my_fp
+            out_mols.put(m)
+            mols.task_done()
+        print "HERE"
         if error_counter:
             print "ERROR CREATING", str(error_counter), "FINGERPRINTS"
-        if error_counter == i+1:
-            # If they have all failed then fail
-            return None
-        else:
-            return mols
+        out_mols.close()
+        return None
 
-def parse_json_mols(mols):
+def parse_json_mols(mols, out_mols):
     """Function to parse json mol objs"""
-    out_mols = []
     for i, m in enumerate(mols):
         rdmol = rdkit_parse.parse_mol_json(m)
         if rdmol is None:
             print "NONE MOL"
             continue
         m["RDMOL"] = rdmol
-        out_mols.append(m)
-    return out_mols
-
-def add_values_dict(my_mols):
-    """Function to add a values dict to the JSON if it doesn't exist"""
-    out_mols = []
-    for mol in my_mols:
-        if "values" in mol:
+        # Add the values_dict
+        if "values" in m:
             pass
         else:
-            mol["values"] = {}
-        out_mols.append(mol)
-    return out_mols
+            m["values"] = {}
+        out_mols.put(m)
+    out_mols.close()
+    return None
 
 
 def sdf_mols_to_json(mols):
     """Function to parse SDF mols and return a JSON back"""
     out_mols = []
-    for i,m in enumerate(mols.split("$$$$\n")):
+    for m in mols.split("$$$$\n"):
         out_mols.append({"source": m, "format": "mol", "values": {}})
     return out_mols
 
 
-def parse_sdf_mols(mols):
+def parse_sdf_mols(mols, out_mols):
     """Function to get a json of molecules from an SDF"""
     my_json = sdf_mols_to_json(mols)
-    return parse_json_mols(my_json)    
+    return parse_json_mols(my_json, out_mols)
 
 
 class LibMethods():
@@ -113,11 +112,10 @@ class LibMethods():
         else:
             self.lib_type = None
 
-    def get_mols(self):
+    def get_mols(self, out_mols):
         # Get the molecules
-        my_mols = self.f_d[self.lib_type](self.lib_mols)
-        my_mols = add_values_dict(my_mols)
-        return my_mols
+        self.f_d[self.lib_type](self.lib_mols, out_mols)
+        return None
 
 def cosine(mol, lib_in):
     return DataStructs.BulkCosineSimilarity(mol,lib_in)
@@ -159,12 +157,17 @@ class SimMethods():
             self.sim_meth = None
             print "SIMILARIRY METHOD NOT ALLOWED"
     def find_sim(self, mol, lib_in, threshold):
-        my_sim = self.f_dict[self.sim_meth](mol["FP"],[x["FP"] for x in lib_in])
-        # Now make the out list to return
         out_ans = []
-        for i,sim in enumerate(my_sim):
+        while True:
+            try:
+                x = lib_in.get()
+            except Closed:
+                break
+            sim = self.f_dict[self.sim_meth](mol["FP"],[x["FP"]])
+            sim = sim[0]
+            # Now make the out list to return
             if sim > threshold:
-                my_ele = lib_in[i]
-                my_ele["values"]["similarity"] = sim
-                out_ans.append(my_ele)
+                x["values"]["similarity"] = sim
+                out_ans.append(x)
+            lib_in.task_done()
         return out_ans

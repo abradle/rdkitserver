@@ -22,6 +22,18 @@ ADD MYSITE /MYSITE
 ADD USRCAT /USRCAT
 RUN cd /USRCAT && python setup.py install
 RUN mkdir /MYSITE/logs/
-RUN pip install celery django-celery
+RUN apt-get install -y rabbitmq-server
+RUN pip install celery boto django-celery Closeablequeue
 RUN python /MYSITE/src/testproject/manage.py collectstatic --noinput
-CMD cd /MYSITE && bash /set_nginx.bash && service nginx restart && bash /run_gunicorn.bash
+# Now make the databse
+# Run the rest of the commands as the ``postgres`` user created by the ``postgres-9.3`` package when it was ``apt-get installed``
+USER postgres
+RUN /etc/init.d/postgresql start &&\
+    psql --command "ALTER USER postgres WITH PASSWORD 'postgres';" &&\
+    createdb -O postgres mydb
+USER root
+# Hack to get around some AUFS weriedness
+RUN mkdir /etc/ssl/private-copy; mv /etc/ssl/private/* /etc/ssl/private-copy/; rm -r /etc/ssl/private; mv /etc/ssl/private-copy /etc/ssl/private; chmod -R 0700 /etc/ssl/private; chown -R postgres /etc/ssl/private
+RUN rabbitmq-server & sleep 10 && rabbitmqctl add_user myuser mypassword && rabbitmqctl add_vhost myvhost && rabbitmqctl set_permissions -p myvhost myuser ".*" ".*" ".*" && rabbitmq-plugins enable rabbitmq_management
+RUN service postgresql start && python /MYSITE/src/testproject/manage.py syncdb --noinput
+CMD rabbitmq-server -detached && cd /MYSITE && bash /set_nginx.bash && service postgresql start && service nginx restart && bash /run_gunicorn.bash

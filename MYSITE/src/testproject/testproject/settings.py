@@ -26,8 +26,7 @@ TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
-BROKER_URL = 'django://'
-
+BROKER_URL = 'amqp://guest:guest@localhost:5672/'
 # Application definition
 
 INSTALLED_APPS = (
